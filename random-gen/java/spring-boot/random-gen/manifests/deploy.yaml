@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: random-gen
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-java-springboot-api
+  namespace: random-gen
+  labels:
+    app: random-java-springboot-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-java-springboot-api
+  template:
+    metadata:
+      labels:
+        app: random-java-springboot-api
+    spec:
+      containers:
+        - name: random-java-springboot-api
+          image: quay.io/doofenshmirtz/random-gen:java-springboot
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: random-java-springboot-service
+  namespace: random-gen
+spec:
+  selector:
+    app: random-java-springboot-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
