@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: random-gen
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-java-quarkus-api
+  namespace: random-gen
+  labels:
+    app: random-java-quarkus-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-java-quarkus-api
+  template:
+    metadata:
+      labels:
+        app: random-java-quarkus-api
+    spec:
+      containers:
+        - name: random-java-quarkus-api
+          image: quay.io/doofenshmirtz/random-gen:java-quarkus
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: random-java-quarkus-service
+  namespace: random-gen
+spec:
+  selector:
+    app: random-java-quarkus-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
